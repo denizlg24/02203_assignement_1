@@ -27,7 +27,7 @@ Your initial drawing was a great foundation and the logic flow was spot on. I ju
 The main adjustments are:
 1. **State 2 & 3 (Loading RegB):** Separated the waiting state (`Req=0`) from the loading state. This ensures we don't save switch bounce or garbage data into `RegB` while the user is still flipping the switches.
 2. **The "Comparator" (States 4, 5, 6):** Since we only have one ALU and no dedicated comparator, the FSM can't directly check `RegA > RegB`. Instead, we have to command the ALU to subtract (`FN=00`) and then look at the physical output flags (`Z` and `N`) to decide our next state. 
-3. **State 7 (End):** Added a loop with `Req=1` so the circuit holds the `Ack` signal while the user is reading the final result on the LEDs.
+*(Note: I also removed `C <= RegA` from the final state because in Fig 2, C is permanently buffered to RegA, so the FSM doesn't need a control signal for it).*
 
 Here is the revised diagram:
 
