@@ -32,3 +32,11 @@ The main adjustments are:
 Here is the revised diagram:
 
 <img width="1200" height="1600" alt="State Machine" src="https://github.com/user-attachments/assets/aa0226b1-74d2-4224-a262-efcb46ab5bf6" />
+
+Our final FSM diagram:
+
+![fsm_diagram](./fsmd.png)
+
+We also drew up a ASM:
+
+![asm_diagram](./task2_asm.png)
