@@ -21,7 +21,7 @@ module gcd (
     output logic [15 : 0] C       // The result.
 );
     typedef enum logic [2 : 0] { in_a, load_a, in_b, load_b, compare, b_greater, a_greater, print } state_t; // Input your own state names here
-    logic [1:0] FN;
+    //logic [1:0] FN;
     logic Z, N;
     logic [16:0] temp;
     shortint unsigned reg_a, next_reg_a, reg_b, next_reg_b;
@@ -35,7 +35,7 @@ module gcd (
         next_reg_b = reg_b;
         ack = 1'b0;
         C   = reg_a;
-        FN   = 2'b00;
+        //FN   = 2'b00;
         temp = 17'b0;
         Z    = 1'b0;
         N    = 1'b0;
@@ -68,7 +68,7 @@ module gcd (
                 next_state = compare;
             end
             compare: begin
-                FN = 2'b00; // A - B
+                //FN = 2'b00; // A - B
                 temp = {1'b0, reg_a} - {1'b0, reg_b};
                 Z = (temp[15:0] == 16'b0);
                 N = temp[16];
@@ -82,13 +82,13 @@ module gcd (
                 end   
             end
             a_greater: begin
-                FN = 2'b00; // A - B
+                //FN = 2'b00; // A - B
                 temp = {1'b0, reg_a} - {1'b0, reg_b};
                 next_reg_a = temp[15:0];
                 next_state = compare;
             end
             b_greater: begin
-                FN = 2'b01; // B - A
+                //FN = 2'b01; // B - A
                 temp = {1'b0, reg_b} - {1'b0, reg_a};
                 next_reg_b = temp[15:0];
                 next_state = compare;

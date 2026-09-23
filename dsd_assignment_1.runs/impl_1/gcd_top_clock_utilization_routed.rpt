@@ -1,7 +1,7 @@
 Copyright 1986-2022 Xilinx, Inc. All Rights Reserved. Copyright 2022-2024 Advanced Micro Devices, Inc. All Rights Reserved.
 ---------------------------------------------------------------------------------------------------------------------------------------------
 | Tool Version : Vivado v.2024.2 (lin64) Build 5239630 Fri Nov 08 22:34:34 MST 2024
-| Date         : Thu Sep 17 16:46:25 2026
+| Date         : Wed Sep 23 08:22:01 2026
 | Host         : orbstack running 64-bit unknown
 | Command      : report_clock_utilization -file gcd_top_clock_utilization_routed.rpt
 | Design       : gcd_top
