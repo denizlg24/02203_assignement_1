@@ -70,7 +70,7 @@ module gcd (
                 next_reg_a = AB;
                 ack = 1'b1;
 
-                if (req == 1'b1)
+                if (req == 1'b0)
                     next_state = in_b;
                 // else
                 //     next_state = load_a;

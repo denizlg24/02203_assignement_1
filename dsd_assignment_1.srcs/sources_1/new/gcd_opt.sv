@@ -76,7 +76,7 @@ module gcd_opt (
             end
             in_b: begin
                 ack = 1'b0;
-                if(req == 1'b1)
+                if(req == 1'b0)
                     next_state = load_b;
                 // else
                 //     next_state = in_b;
