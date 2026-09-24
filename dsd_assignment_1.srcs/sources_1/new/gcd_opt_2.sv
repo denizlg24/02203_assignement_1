@@ -65,7 +65,7 @@ module gcd_opt_share (
             end
             in_b: begin
                 ack = 1'b0;
-                if(req == 1'b1)
+                if(req == 1'b0)
                     next_state = load_b;
             end
             load_b: begin
