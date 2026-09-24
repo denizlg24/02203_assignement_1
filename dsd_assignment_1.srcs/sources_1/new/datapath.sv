@@ -57,8 +57,8 @@ module datapath(
     );
     
     c_mux mux(
-        .data_in1(Y),
-        .data_in2(AB),
+        .data_in1(AB),
+        .data_in2(Y),
         .s(ABorALU),
         .data_out(C)
     );
