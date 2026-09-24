@@ -29,8 +29,7 @@ module datapath(
     output logic         N,
     output logic         Z,
     input  logic  [1:0] FN,
-    input  logic       clk,
-    input  logic     reset
+    input  logic       clk
     );
     wire [15:0] A, B, Y;
     
