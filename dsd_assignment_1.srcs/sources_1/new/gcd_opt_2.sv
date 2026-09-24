@@ -12,7 +12,7 @@
 // -----------------------------------------------------------------------------
 
 
-module gcd (
+module gcd_opt_share (
     input  logic          clk,    // The clock signal.
     input  logic          reset,  // Reset the module.
     input  logic          req,    // Start computation.
@@ -20,10 +20,10 @@ module gcd (
     output logic          ack,    // Input received / Computation is complete.
     output logic [15 : 0] C       // The result.
 );
-    typedef enum logic [2 : 0] { in_a, load_a, in_b, load_b, compare, b_greater, a_greater, print } state_t; // Input your own state names here
-    //logic [1:0] FN;
+    typedef enum logic [2 : 0] { in_a, load_a, in_b, load_b, compare, b_greater, a_greater, print } state_t;
     logic Z, N;
     logic [16:0] temp;
+    logic [15:0] X,Y;
     shortint unsigned reg_a, next_reg_a, reg_b, next_reg_b;
     
     state_t state, next_state;
@@ -35,17 +35,26 @@ module gcd (
         next_reg_b = reg_b;
         ack = 1'b0;
         C   = reg_a;
-        //FN   = 2'b00;
         temp = 17'b0;
         Z    = 1'b0;
         N    = 1'b0;
+        X = reg_a;
+        Y = reg_b;
+        
+        case(state)
+            b_greater: begin
+                Y = reg_b;
+                X = reg_a;
+            end
+        endcase
+        
+        temp = {1'b0, X} - {1'b0, Y};
+        
         case (state)
             in_a: begin
                 ack = 1'b0;
                 if(req == 1'b1)
                     next_state = load_a;
-                // else
-                //     next_state = in_a;
             end
             load_a: begin
                 next_reg_a = AB;
@@ -53,23 +62,17 @@ module gcd (
 
                 if (req == 1'b1)
                     next_state = in_b;
-                // else
-                //     next_state = load_a;
             end
             in_b: begin
                 ack = 1'b0;
                 if(req == 1'b0)
                     next_state = load_b;
-                // else
-                //     next_state = in_b;
             end
             load_b: begin
                 next_reg_b = AB;
                 next_state = compare;
             end
             compare: begin
-                //FN = 2'b00; // A - B
-                temp = {1'b0, reg_a} - {1'b0, reg_b};
                 Z = (temp[15:0] == 16'b0);
                 N = temp[16];
                 if(Z == 1'b1)
@@ -82,14 +85,10 @@ module gcd (
                 end   
             end
             a_greater: begin
-                //FN = 2'b00; // A - B
-                temp = {1'b0, reg_a} - {1'b0, reg_b};
                 next_reg_a = temp[15:0];
                 next_state = compare;
             end
             b_greater: begin
-                //FN = 2'b01; // B - A
-                temp = {1'b0, reg_b} - {1'b0, reg_a};
                 next_reg_b = temp[15:0];
                 next_state = compare;
             end
@@ -98,8 +97,6 @@ module gcd (
                 C = reg_a;
                 if(req == 1'b0)
                     next_state = in_a;
-                // else
-                //     next_state = print;
             end
         endcase
     end
