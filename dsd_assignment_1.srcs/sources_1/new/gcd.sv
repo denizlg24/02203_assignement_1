@@ -24,7 +24,6 @@ module gcd (
     //logic [1:0] FN;
     logic Z, N;
     logic [16:0] temp;
-    logic [15:0] X,Y;
     shortint unsigned reg_a, next_reg_a, reg_b, next_reg_b;
     
     state_t state, next_state;
@@ -40,24 +39,6 @@ module gcd (
         temp = 17'b0;
         Z    = 1'b0;
         N    = 1'b0;
-        X = reg_a;
-        Y = reg_b;
-        
-        case (state)
-            compare, a_greater: begin
-                X = reg_a;
-                Y = reg_b;
-            end
-
-            b_greater: begin
-                X = reg_b;
-                Y = reg_a;
-            end
-        endcase
-        
-        // arithmetic (operand sharing)
-        temp = {1'b0, X} - {1'b0, Y};
-        
         case (state)
             in_a: begin
                 ack = 1'b0;
@@ -70,7 +51,7 @@ module gcd (
                 next_reg_a = AB;
                 ack = 1'b1;
 
-                if (req == 1'b0)
+                if (req == 1'b1)
                     next_state = in_b;
                 // else
                 //     next_state = load_a;
@@ -88,6 +69,7 @@ module gcd (
             end
             compare: begin
                 //FN = 2'b00; // A - B
+                temp = {1'b0, reg_a} - {1'b0, reg_b};
                 Z = (temp[15:0] == 16'b0);
                 N = temp[16];
                 if(Z == 1'b1)
@@ -101,11 +83,13 @@ module gcd (
             end
             a_greater: begin
                 //FN = 2'b00; // A - B
+                temp = {1'b0, reg_a} - {1'b0, reg_b};
                 next_reg_a = temp[15:0];
                 next_state = compare;
             end
             b_greater: begin
                 //FN = 2'b01; // B - A
+                temp = {1'b0, reg_b} - {1'b0, reg_a};
                 next_reg_b = temp[15:0];
                 next_state = compare;
             end
@@ -118,8 +102,6 @@ module gcd (
                 //     next_state = print;
             end
         endcase
-        
-        
     end
 
         // Register

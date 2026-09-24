@@ -44,27 +44,3 @@ We also drew up a ASM:
 ![asm_diagram](./task2_asm.png)
 
 #### Task 3
-
-##### 3.a)
-
-We decided to implement the operand sharing. Instead of having three subtractions one on each state, we first choose which operands are going to be used, based on state, and then do the arithmetic with the chosen operands.
-
-##### 3.c)
-
-We ran the utilization report on the naive GCD implementation - [Naive Utilization Report](./utilization_reports/gcd_naive_utilization.txt) - and recorded a usage of 60 LUTs and 40 FFs. The LUTs were considerably above what we expected, and we attribute that to the synthesis tool generating subtractor circuits for all the operations we had (3). FFs also were considerably higher and we didn't understand why in the beginning. After digging down, we found out that even declaring 3 bits for the state encoding, the synthesis tool overwrote the encoding and used one-hot encoding.
-
-After implementing the first optimization - operator sharing - where instead of running subtractions in three places, we first decide which are the operands and then run the subtraction, as well as forcing the sequential encoding with the flag `(* fsm_encoding = "sequential" *)` we reran the implementation and generated another utilization report - [Operand Sharing Utilization Report](./utilization_reports/gcd_op_sharing_utilization.txt) - and recorded a usage of 47 LUTs and 35 FFs, which now aligns much better with what we expected. The synthesis tool now uses one subtractor circuit only and uses only 3 FFs for encoding state. The other 32 FFs are for the two 16 bit registers we have.
-
-For the second optimization we tried computing both subtractions in parallel and committing only the correct one. The operand-sharing version needs two clock cycles per iteration of the algorithm: one in `compare` to subtract and read the flags, and one in `a_greater`/`b_greater` to subtract again and write the result back. In the parallel version we compute `A - B` and `B - A` every cycle with two subtractors, and `compare` uses the sign of `A - B` to decide which result to write back in that same cycle: if $A > B$, `RegA` takes `A - B`; if $A < B$, `RegB` takes `B - A`; if the result is zero we move to the output state. This removes the `a_greater` and `b_greater` states, so the FSM goes from 8 to 6 states and each iteration takes one clock cycle instead of two.
-
-The utilization report for this version is [Parallel Utilization Report](./utilization_reports/gcd_parallel.txt).
-
-| | Shared version | Parallel version |
-|---|---|---|
-| LUTs (`gcd` module) | 47 | TBD |
-| LUTs (whole design, incl. debouncer) | 88 | TBD |
-| CARRY4 | 15 | TBD |
-| FFs (`gcd` module) | 35 | TBD |
-| WNS @ 100 MHz | TBD | TBD |
-| Critical path in `gcd` (data path delay) | TBD | TBD |
-| Clock cycles per iteration | 2 | 1 |

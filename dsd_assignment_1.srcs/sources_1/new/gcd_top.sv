@@ -33,7 +33,7 @@ module gcd_top #(
       .db_tick ()
   );
 
-  gcd_opt u_gcd (
+  gcd u_gcd (
       .clk  (clk),     // The clock signal.
       .reset(reset),   // Reset the module.
       .req  (db_req),  // Input operand / Start computation.

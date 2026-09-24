@@ -12,7 +12,7 @@
 // -----------------------------------------------------------------------------
 
 
-module gcd_opt_parallel (
+module gcd_opt_share (
     input  logic          clk,    // The clock signal.
     input  logic          reset,  // Reset the module.
     input  logic          req,    // Start computation.
@@ -20,9 +20,10 @@ module gcd_opt_parallel (
     output logic          ack,    // Input received / Computation is complete.
     output logic [15 : 0] C       // The result.
 );
-    typedef enum logic [2 : 0] { in_a, load_a, in_b, load_b, compare, print } state_t;
+    typedef enum logic [2 : 0] { in_a, load_a, in_b, load_b, compare, b_greater, a_greater, print } state_t;
     logic Z, N;
-    logic [16:0] temp_ab, temp_ba;
+    logic [16:0] temp;
+    logic [15:0] X,Y;
     shortint unsigned reg_a, next_reg_a, reg_b, next_reg_b;
     
     state_t state, next_state;
@@ -34,12 +35,20 @@ module gcd_opt_parallel (
         next_reg_b = reg_b;
         ack = 1'b0;
         C   = reg_a;
-        temp_ab = 17'b0;
+        temp = 17'b0;
         Z    = 1'b0;
         N    = 1'b0;
+        X = reg_a;
+        Y = reg_b;
         
-        temp_ab = {1'b0, reg_a} - {1'b0, reg_b};
-        temp_ba = {1'b0, reg_b} - {1'b0, reg_a};
+        case(state)
+            b_greater: begin
+                Y = reg_b;
+                X = reg_a;
+            end
+        endcase
+        
+        temp = {1'b0, X} - {1'b0, Y};
         
         case (state)
             in_a: begin
@@ -56,7 +65,7 @@ module gcd_opt_parallel (
             end
             in_b: begin
                 ack = 1'b0;
-                if(req == 1'b0)
+                if(req == 1'b1)
                     next_state = load_b;
             end
             load_b: begin
@@ -64,16 +73,24 @@ module gcd_opt_parallel (
                 next_state = compare;
             end
             compare: begin
-                Z = (temp_ab[15:0] == 16'b0);
-                N = temp_ab[16];
+                Z = (temp[15:0] == 16'b0);
+                N = temp[16];
                 if(Z == 1'b1)
                     next_state = print;
                 else begin
                     if(N == 1'b1)
-                        next_reg_b = temp_ba[15:0];
+                        next_state = b_greater;
                     else
-                        next_reg_a = temp_ab[15:0];
+                        next_state = a_greater;
                 end   
+            end
+            a_greater: begin
+                next_reg_a = temp[15:0];
+                next_state = compare;
+            end
+            b_greater: begin
+                next_reg_b = temp[15:0];
+                next_state = compare;
             end
             print: begin
                 ack = 1'b1;
@@ -82,8 +99,6 @@ module gcd_opt_parallel (
                     next_state = in_a;
             end
         endcase
-        
-        
     end
 
         // Register
