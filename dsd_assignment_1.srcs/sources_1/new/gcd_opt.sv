@@ -27,8 +27,7 @@ module gcd_opt (
     // logic [15:0] X,Y;
     shortint unsigned reg_a, next_reg_a, reg_b, next_reg_b;
     
-    (* fsm_encoding = "sequential" *) state_t state;
-    state_t next_state;
+    state_t state, next_state;
     
     // Combinatorial logic
     always_comb begin
