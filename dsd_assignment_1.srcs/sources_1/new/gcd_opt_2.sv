@@ -43,8 +43,8 @@ module gcd_opt_share (
         
         case(state)
             b_greater: begin
-                Y = reg_b;
-                X = reg_a;
+                Y = reg_a;
+                X = reg_b;
             end
         endcase
         
